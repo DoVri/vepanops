@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="valentine">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VepanoPS - Global Private Server</title>
+    <!-- Tailwind + DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.19/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        brand: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* CSS Variables for Theme Switching */
+        :root {
+            --bg-base: #fff0f5;
+            --bg-gradient:
+                linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%),
+                radial-gradient(at 0% 0%, hsla(340, 100%, 85%, 0.3) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(190, 100%, 85%, 0.3) 0, transparent 50%);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --glass-shadow: 0 8px 32px 0 rgba(236, 72, 153, 0.1);
+            --text-primary: #334155;
+            --text-secondary: #64748b;
+            --card-hover-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        [data-theme="dracula"] {
+            --bg-base: #0f172a;
+            --bg-gradient:
+                radial-gradient(at 0% 0%, hsla(260, 40%, 15%, 1) 0, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(320, 40%, 15%, 1) 0, transparent 50%),
+                linear-gradient(to bottom, #0f172a, #1e1b4b);
+            --glass-bg: rgba(30, 41, 59, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --card-hover-bg: rgba(30, 41, 59, 0.9);
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-base);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            background-size: cover;
+            color: var(--text-primary);
+            transition: background 0.5s ease, color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .brand-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glassmorphism Classes using CSS Vars */
+        .glass-anime {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: var(--card-hover-bg);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            border-color: rgba(236, 72, 153, 0.5);
+        }
+
+        /* Sakura / Snow Animation */
+        .sakura {
+            position: fixed;
+            top: -10vh;
+            z-index: 1;
+            user-select: none;
+            cursor: default;
+            animation-name: fall, sway;
+            animation-duration: 10s, 3s;
+            animation-timing-function: linear, ease-in-out;
+            animation-iteration-count: infinite, infinite;
+            pointer-events: none;
+            color: #fbcfe8;
+            /* Pink Sakura */
+            text-shadow: 0 0 5px #f472b6;
+        }
+
+        /* Change sakura color in dark mode for better visibility */
+        [data-theme="dracula"] .sakura {
+            color: #fce7f3;
+            text-shadow: 0 0 8px #db2777;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            0% {
+                top: -10%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.8;
+            }
+
+            100% {
+                top: 110%;
+                opacity: 0;
+            }
+        }
+
+        @keyframes sway {
+
+            0%,
+            100% {
+                transform: translateX(-25px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateX(25px) rotate(45deg);
+            }
+        }
+
+        /* Platform Tabs */
+        .platform-content {
+            display: none;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .platform-content.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Gradients & Buttons */
+        .text-gradient-anime {
+            background: linear-gradient(135deg, #ec4899 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-anime {
+            background: linear-gradient(45deg, #ec4899, #8b5cf6);
+            border: none;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-anime:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+        }
+
+        /* Helper for text colors in dark mode */
+        [data-theme="dracula"] .text-slate-600 {
+            color: #94a3b8;
+        }
+
+        [data-theme="dracula"] .text-slate-700 {
+            color: #cbd5e1;
+        }
+
+        [data-theme="dracula"] .text-slate-800 {
+            color: #f1f5f9;
+        }
+
+        [data-theme="dracula"] .bg-white {
+            background-color: #1e293b;
+            color: #f1f5f9;
+        }
+
+        [data-theme="dracula"] .bg-white\/50 {
+            background-color: rgba(30, 41, 59, 0.5);
+        }
+
+        [data-theme="dracula"] .bg-white\/60 {
+            background-color: rgba(30, 41, 59, 0.6);
+        }
+
+        [data-theme="dracula"] .bg-white\/80 {
+            background-color: rgba(30, 41, 59, 0.8);
+        }
+
+        [data-theme="dracula"] .border-pink-100 {
+            border-color: #334155;
+        }
+
+        [data-theme="dracula"] .border-slate-200 {
+            border-color: #334155;
+        }
+
+        [data-theme="dracula"] .bg-pink-50 {
+            background-color: rgba(236, 72, 153, 0.1);
+            color: #f9a8d4;
+        }
+
+        [data-theme="dracula"] .bg-green-100 {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+        }
+
+        [data-theme="dracula"] .bg-blue-100 {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        [data-theme="dracula"] .bg-purple-100 {
+            background-color: rgba(168, 85, 247, 0.15);
+            color: #c084fc;
+        }
+
+        [data-theme="dracula"] .bg-indigo-100 {
+            background-color: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+        }
+
+        /* Dark mode footer specific fixes */
+        [data-theme="dracula"] footer.bg-white\/60 {
+            background-color: rgba(15, 23, 42, 0.8) !important;
+            border-top-color: #334155;
+        }
+
+        /* Specific fix for inputs/codes behaving well in dark mode */
+        [data-theme="dracula"] .select-all {
+            background-color: #0f172a;
+            color: #a5b4fc;
+            border: 1px solid #334155;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <div class="navbar glass-anime fixed top-0 z-[100] px-4 lg:px-10 h-20 transition-all">
+        <div class="navbar-start">
+            <div class="dropdown">
+                <label tabindex="0" class="btn btn-ghost lg:hidden text-pink-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h8m-8 6h16" />
+                    </svg>
+                </label>
+                <ul tabindex="0"
+                    class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-white rounded-2xl w-52 text-slate-600 font-semibold border border-pink-100">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#server">Status</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#join">Download</a></li>
+                    <li><a href="https://discord.gg/EhpusBpnay" target="_blank" class="text-pink-500"><i
+                                class="fab fa-discord"></i> Discord</a></li>
+                </ul>
+            </div>
+            <a href="#"
+                class="btn btn-ghost normal-case text-xl lg:text-3xl flex items-center gap-2 hover:bg-transparent">
+                <i class="fa-solid fa-fan text-3xl text-pink-500 animate-spin-slow" style="animation-duration: 8s;"></i>
+                <span class="font-extrabold tracking-tight text-gradient-anime ml-1">VepanoPS</span>
+            </a>
+        </div>
+        <div class="navbar-center hidden lg:flex">
+            <ul class="menu menu-horizontal px-1 font-bold text-slate-600 gap-2">
+                <li><a href="#home" class="hover:text-pink-500 hover:bg-pink-50/50 rounded-xl px-4 transition">Home</a>
+                </li>
+                <li><a href="#server"
+                        class="hover:text-pink-500 hover:bg-pink-50/50 rounded-xl px-4 transition">Status</a></li>
+                <li><a href="#features"
+                        class="hover:text-pink-500 hover:bg-pink-50/50 rounded-xl px-4 transition">Features</a></li>
+                <li><a href="#join"
+                        class="hover:text-pink-500 hover:bg-pink-50/50 rounded-xl px-4 transition">Tutorials</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end gap-3">
+            <!-- Theme Toggle -->
+            <label
+                class="swap swap-rotate btn btn-ghost btn-circle text-pink-500 transition-transform hover:rotate-180 duration-500">
+                <!-- this hidden checkbox controls the state -->
+                <input type="checkbox" id="theme-toggle" />
+
+                <!-- sun icon -->
+                <svg class="swap-on fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                        d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
+                </svg>
+
+                <!-- moon icon -->
+                <svg class="swap-off fill-current w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                        d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z" />
+                </svg>
+            </label>
+
+            <!-- Fixed Discord Button: removed 'hidden sm:flex' to make it visible on mobile -->
+            <a href="https://discord.gg/EhpusBpnay" target="_blank"
+                class="flex btn btn-sm btn-anime rounded-full px-4 sm:px-6 shadow-lg shadow-pink-200">
+                <i class="fab fa-discord"></i> <span class="hidden xs:inline">Discord</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div id="home" class="hero min-h-screen relative pt-20">
+        <!-- Animated Background Shapes -->
+        <div
+            class="absolute top-20 left-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
+        </div>
+        <div
+            class="absolute top-20 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+        </div>
+
+        <div class="hero-content text-center z-10 w-full max-w-4xl flex flex-col items-center py-12 lg:py-24 px-4">
+
+            <div class="badge badge-lg bg-white/50 backdrop-blur border-pink-200 text-pink-600 gap-2 mb-8 shadow-sm py-4 px-6 rounded-full"
+                data-aos="fade-down">
+                <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span> The Best Global Private Server
+            </div>
+
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-[1.1] tracking-tight text-slate-800"
+                data-aos="zoom-in">
+                Vepano <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600">PS</span>
+            </h1>
+
+            <p class="py-4 lg:py-6 text-lg md:text-2xl text-slate-600 max-w-2xl font-medium leading-relaxed"
+                data-aos="fade-up" data-aos-delay="100">
+                Experience ultimate Growtopia gameplay within a stunning anime world. Global server, exclusive features,
+                and a friendly community.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 mt-8 w-full sm:w-auto px-4" data-aos="fade-up"
+                data-aos-delay="200">
+                <a href="#join"
+                    class="btn btn-anime btn-lg rounded-2xl w-full sm:w-auto px-10 shadow-xl shadow-pink-200/50 border-none gap-3 text-lg">
+                    <i class="fas fa-play"></i> Play Now
+                </a>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-16 w-full max-w-3xl">
+                <div class="glass-card p-4 rounded-3xl flex flex-col items-center" data-aos="fade-up"
+                    data-aos-delay="300">
+                    <i class="fas fa-users text-2xl text-pink-400 mb-2"></i>
+                    <div class="text-2xl font-bold text-slate-800">50+</div>
+                    <div class="text-xs text-slate-500 font-bold uppercase">Players</div>
+                </div>
+                <div class="glass-card p-4 rounded-3xl flex flex-col items-center" data-aos="fade-up"
+                    data-aos-delay="400">
+                    <i class="fas fa-cube text-2xl text-purple-400 mb-2"></i>
+                    <div class="text-2xl font-bold text-slate-800">100+</div>
+                    <div class="text-xs text-slate-500 font-bold uppercase">Worlds</div>
+                </div>
+                <div class="glass-card p-4 rounded-3xl flex flex-col items-center" data-aos="fade-up"
+                    data-aos-delay="500">
+                    <i class="fas fa-server text-2xl text-indigo-400 mb-2"></i>
+                    <div class="text-2xl font-bold text-slate-800">22ms</div>
+                    <div class="text-xs text-slate-500 font-bold uppercase">Ping</div>
+                </div>
+                <div class="glass-card p-4 rounded-3xl flex flex-col items-center" data-aos="fade-up"
+                    data-aos-delay="600">
+                    <i class="fas fa-clock text-2xl text-green-400 mb-2"></i>
+                    <div class="text-2xl font-bold text-slate-800">99%</div>
+                    <div class="text-xs text-slate-500 font-bold uppercase">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Server Info Section -->
+    <section id="server" class="py-20 relative">
+        <div class="container mx-auto px-4">
+            <div class="glass-card rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden bg-white/40" data-aos="fade-up"
+                data-aos-duration="1000">
+                <div class="flex flex-col md:flex-row items-center gap-12 relative z-10">
+                    <div class="w-full md:w-1/2" data-aos="fade-right" data-aos-delay="200">
+                        <!-- Abstract Card -->
+                        <div
+                            class="w-full h-80 rounded-[1.8rem] shadow-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
+                            <div
+                                class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
+                            </div>
+                            <div class="text-center p-6 relative z-10">
+                                <i
+                                    class="fas fa-server text-6xl text-pink-500 mb-4 animate-pulse group-hover:scale-110 transition-transform duration-500"></i>
+                                <h3 class="text-2xl font-bold text-white">Global Server</h3>
+                                <p class="text-slate-400 mt-2">Big Server Quality</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-full md:w-1/2" data-aos="fade-left" data-aos-delay="400">
+                        <h2 class="text-3xl md:text-5xl font-bold mb-6 text-slate-800">Server <span
+                                class="text-gradient-anime">Status</span></h2>
+                        <p class="text-slate-600 text-lg mb-8 leading-relaxed">
+                            Enjoy lag-free gaming with our high-performance global infrastructure. Optimized
+                            specifically for Growtopia protocols.
+                        </p>
+
+                        <div class="space-y-4">
+                            <div
+                                class="bg-white/80 p-6 rounded-2xl border border-pink-100 flex flex-col hover:bg-white transition-colors">
+                                <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Connection
+                                    Address</h4>
+                                <div class="flex items-center justify-between gap-4">
+                                    <p
+                                        class="text-xl md:text-2xl font-bold text-slate-800 font-mono break-all select-all">
+                                        https://gtpshost.com/d/vepanops
+                                    </p>
+                                    <i class="fas fa-wifi text-green-500 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-16 md:py-24">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16 max-w-3xl mx-auto" data-aos="fade-up">
+                <span class="text-pink-500 font-bold uppercase tracking-widest text-xs">Excellence</span>
+                <h2 class="text-3xl md:text-5xl font-bold mt-2 mb-6 text-slate-800">Key <span
+                        class="text-gradient-anime">Features</span></h2>
+                <p class="text-slate-500 text-lg">Exclusive features designed to pamper every player.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Feature 1 -->
+                <div class="glass-card p-8 rounded-[2rem] hover:-translate-y-2 transition-transform duration-300"
+                    data-aos="fade-up" data-aos-delay="0">
+                    <div
+                        class="w-14 h-14 bg-pink-100 rounded-2xl flex items-center justify-center text-pink-500 text-2xl mb-6">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Exclusive Items</h3>
+                    <p class="text-slate-500">1000+ custom items uniquely designed for our server.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="glass-card p-8 rounded-[2rem] hover:-translate-y-2 transition-transform duration-300"
+                    data-aos="fade-up" data-aos-delay="100">
+                    <div
+                        class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-500 text-2xl mb-6">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Custom Events</h3>
+                    <p class="text-slate-500">Daily and weekly events with amazing rewards.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="glass-card p-8 rounded-[2rem] hover:-translate-y-2 transition-transform duration-300"
+                    data-aos="fade-up" data-aos-delay="200">
+                    <div
+                        class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-500 text-2xl mb-6">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Community</h3>
+                    <p class="text-slate-500">Solid and friendly community, ready to help new players.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="glass-card p-8 rounded-[2rem] hover:-translate-y-2 transition-transform duration-300"
+                    data-aos="fade-up" data-aos-delay="300">
+                    <div
+                        class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center text-green-500 text-2xl mb-6">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Secure</h3>
+                    <p class="text-slate-500">Advanced security systems to keep your account safe.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tutorial Section -->
+    <section id="join" class="py-16 md:py-24 relative">
+        <div class="container mx-auto px-4 max-w-5xl">
+            <div class="text-center mb-12" data-aos="zoom-in">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-6">How to <span
+                        class="text-pink-500">Join</span></h2>
+
+                <!-- Tab Buttons -->
+                <div
+                    class="inline-flex bg-white/80 backdrop-blur p-1.5 rounded-full shadow-lg border border-pink-100 flex-wrap justify-center gap-1">
+                    <button
+                        class="px-6 py-2.5 rounded-full text-sm font-bold transition-all text-white bg-pink-500 shadow-md tab-btn"
+                        onclick="switchTab(event, 'android')">
+                        <i class="fab fa-android mr-2"></i> Android
+                    </button>
+                    <button
+                        class="px-6 py-2.5 rounded-full text-sm font-bold transition-all text-slate-500 hover:text-pink-500 tab-btn"
+                        onclick="switchTab(event, 'windows')">
+                        <i class="fab fa-windows mr-2"></i> Windows
+                    </button>
+                    <button
+                        class="px-6 py-2.5 rounded-full text-sm font-bold transition-all text-slate-500 hover:text-pink-500 tab-btn"
+                        onclick="switchTab(event, 'ios')">
+                        <i class="fab fa-apple mr-2"></i> iOS
+                    </button>
+                    <button
+                        class="px-6 py-2.5 rounded-full text-sm font-bold transition-all text-slate-500 hover:text-pink-500 tab-btn"
+                        onclick="switchTab(event, 'powertunnel')">
+                        <i class="fas fa-bolt mr-2"></i> PowerTunnel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="glass-card rounded-[2.5rem] p-6 md:p-10 border-t-4 border-pink-400 bg-white shadow-xl"
+                data-aos="fade-up" data-aos-delay="200">
+
+                <!-- Android Content -->
+                <div id="android" class="platform-content active">
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="w-full md:w-2/3">
+                            <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center text-green-600 shadow-sm">
+                                    <i class="fab fa-android text-2xl"></i></div>
+                                Setup via Hosts Go
+                            </h3>
+                            <div class="space-y-6">
+                                <div class="flex gap-4">
+                                    <span
+                                        class="flex-none w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">1</span>
+                                    <div>
+                                        <p class="font-bold text-slate-700">Download App</p>
+                                        <p class="text-sm text-slate-600">Download <strong>Hosts Go (No Root)</strong>
+                                            using the button below.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <span
+                                        class="flex-none w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">2</span>
+                                    <div class="w-full">
+                                        <p class="font-bold text-slate-700">Configure Hosts</p>
+                                        <p class="text-sm text-slate-600 mb-2">Open Hosts Editor, paste this URL into
+                                            the Download/Import field:</p>
+                                        <div
+                                            class="bg-indigo-950 p-4 rounded-xl border border-indigo-900/50 font-mono text-sm text-pink-400 break-all select-all shadow-inner">
+                                            https://gtpshost.com/d/vepanops
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <span
+                                        class="flex-none w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">3</span>
+                                    <div>
+                                        <p class="font-bold text-slate-700">Connect</p>
+                                        <p class="text-sm text-slate-600">Turn on the protection (Start), then login to
+                                            Growtopia.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-8">
+                                <a href="https://www.mediafire.com/file/ctly08te3i8rlwq/%28No_root%29_Hosts_Go_2.1.9_Apkpure.apk/file"
+                                    class="btn btn-anime rounded-full px-8 normal-case text-white shadow-lg shadow-pink-200">Download
+                                    Hosts Go</a>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/3 flex justify-center">
+                            <i class="fab fa-android text-[150px] text-green-200 opacity-50 animate-bounce"
+                                style="animation-duration: 4s;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Windows Content -->
+                <div id="windows" class="platform-content">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
+                            <i class="fab fa-windows text-2xl"></i></div>
+                        Windows Setup
+                    </h3>
+                    <div
+                        class="bg-slate-900 rounded-2xl p-6 text-slate-300 font-mono text-xs md:text-sm overflow-x-auto shadow-inner border border-slate-800">
+                        <div class="mb-4 text-slate-500"># 1. Open Notepad as Administrator</div>
+                        <div class="mb-4">File Path: <span
+                                class="text-yellow-400 underline decoration-dashed">C:\Windows\System32\drivers\etc\hosts</span>
+                        </div>
+                        <div class="mb-2 text-slate-500"># 2. Add these lines at the very bottom:</div>
+                        <div class="select-all bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                            <span class="text-pink-400">SERVER IP</span> growtopia1.com<br>
+                            <span class="text-pink-400">SERVER IP</span> growtopia2.com<br>
+                            <span class="text-pink-400">SERVER IP</span> www.growtopia1.com<br>
+                            <span class="text-pink-400">SERVER IP</span> www.growtopia2.com
+                        </div>
+                        <div class="mt-4 text-slate-500"># 3. Save (Ctrl+S) and open Growtopia.</div>
+                    </div>
+                </div>
+
+                <!-- iOS Content -->
+                <div id="ios" class="platform-content">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-slate-200 flex items-center justify-center text-slate-700 shadow-sm">
+                            <i class="fab fa-apple text-2xl"></i></div>
+                        iOS / Mac Setup
+                    </h3>
+                    <div class="alert bg-pink-50 border-pink-100 text-pink-900 mb-6 text-sm">
+                        <i class="fas fa-info-circle"></i> Use <strong>Surge 5</strong> or <strong>Shadowrocket</strong>
+                        from the App Store.
+                    </div>
+                    <div class="bg-indigo-950 p-6 rounded-2xl border border-indigo-900/50 shadow-inner">
+                        <p class="font-bold text-slate-400 mb-2 uppercase text-xs tracking-wider">Host URL Config</p>
+                        <code
+                            class="block text-pink-400 font-mono break-all select-all text-lg">https://gtpshost.com/ios/vepanops</code>
+                    </div>
+                </div>
+
+                <!-- PowerTunnel Content -->
+                <div id="powertunnel" class="platform-content h-full">
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-4">
+                        <div
+                            class="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 shadow-sm">
+                            <i class="fas fa-bolt text-2xl"></i></div>
+                        PowerTunnel
+                    </h3>
+                    <ul class="space-y-4 text-slate-600">
+                        <li class="flex items-start gap-3"><i
+                                class="fas fa-check-circle text-green-500 mt-1"></i><span>Install PowerTunnel from the
+                                link below.</span></li>
+                        <li class="flex items-start gap-3"><i
+                                class="fas fa-check-circle text-green-500 mt-1"></i><span>Go to <strong>Plugin</strong>
+                                -> <strong>Hosts</strong>.</span></li>
+                        <li class="flex items-start gap-3"><i class="fas fa-check-circle text-green-500 mt-1"></i>
+                            <div class="w-full">
+                                <span>Enter URL:</span>
+                                <div class="mt-2 bg-slate-100 p-2 rounded-lg font-mono text-pink-600 font-bold text-sm">
+                                    https://gtpshost.com/d/vepanops</div>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3"><i
+                                class="fas fa-check-circle text-green-500 mt-1"></i><span>Connect.</span></li>
+                    </ul>
+                    <div class="mt-8">
+                        <a href="https://android.izzysoft.de/repo/apk/io.github.krlvm.powertunnel.android"
+                            class="btn btn-outline btn-primary rounded-full px-8">Download APK</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white/60 backdrop-blur border-t border-slate-200 pt-16 pb-8 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col items-center text-center">
+                <div class="flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-fan text-2xl text-pink-500"></i>
+                    <span class="text-2xl font-bold text-slate-800 font-['Outfit']">VepanoPS</span>
+                </div>
+                <p class="text-slate-500 text-sm max-w-md mb-8">
+                    A private server crafted with love for the Global Growtopia Community.
+                </p>
+
+                <div class="flex gap-6 mb-8">
+                    <a href="#" class="text-slate-400 hover:text-pink-500 transition-colors text-2xl"><i
+                                   <a href="#" class="text-slate-400 hover:text-pink-500 transition-colors text-2xl"><i
+             class="fab fa-discord"></i></a>
+
+                </div>
+
+                <div class="mt-8 text-xs text-slate-400">
+                    &copy; 2025 VepanoPS & NovaStore. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sakura Container -->
+    <div id="sakura-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            easing: 'ease-out-cubic'
+        });
+
+        // Tab Switching Logic
+        function switchTab(evt, platformName) {
+            const contents = document.getElementsByClassName("platform-content");
+            for (let c of contents) c.classList.remove("active");
+
+            const btns = document.getElementsByClassName("tab-btn");
+            for (let b of btns) {
+                b.classList.remove("bg-pink-500", "text-white", "shadow-md");
+                b.classList.add("text-slate-500", "hover:text-pink-500");
+            }
+
+            document.getElementById(platformName).classList.add("active");
+
+            evt.currentTarget.classList.remove("text-slate-500", "hover:text-pink-500");
+            evt.currentTarget.classList.add("bg-pink-500", "text-white", "shadow-md");
+        }
+
+        // Theme Toggle Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+
+            // Check Local Storage
+            const savedTheme = localStorage.getItem('theme') || 'valentine';
+            html.setAttribute('data-theme', savedTheme);
+            toggle.checked = savedTheme === 'valentine'; // Checked = Sun (Valentine/Light)
+
+            toggle.addEventListener('change', (e) => {
+                const newTheme = e.target.checked ? 'valentine' : 'dracula';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+            });
+
+            // Sakura Animation
+            const container = document.getElementById('sakura-container');
+            const particles = ['🌸', '❀', '❄'];
+
+            for (let i = 0; i < 25; i++) {
+                const el = document.createElement('div');
+                el.classList.add('sakura');
+                el.innerText = particles[Math.floor(Math.random() * particles.length)];
+
+                // Random Style
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 5 + 8) + 's, ' + (Math.random() * 3 + 2) + 's';
+                el.style.animationDelay = Math.random() * 5 + 's';
+
+                // Random Size
+                const size = Math.random() * 10 + 10;
+                el.style.fontSize = size + 'px';
+
+                // Initial tweak
+                if (el.innerText === '❄') {
+                    el.style.fontSize = (size + 5) + 'px';
+                    el.style.opacity = '0.7';
+                }
+
+                container.appendChild(el);
+            }
+        });
+    </script>
+</body>
+
+</html>
